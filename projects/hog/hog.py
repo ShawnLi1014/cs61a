@@ -130,15 +130,20 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     "*** YOUR CODE HERE ***"
     def swap(a, b):
         return b, a
+    f1 = say
     while score0 < goal and score1 < goal:
-        score0 = score0 + take_turn(strategy0(score0, score1), score1, dice)
-        if is_swap(score0, score1):
-            score0, score1 = swap(score0, score1)
-        player = other(player)
-        if score0 < goal and score1 < goal:
+        if player == 0:
+            score0 = score0 + take_turn(strategy0(score0, score1), score1, dice)
+            if is_swap(score0, score1):
+                score0, score1 = swap(score0, score1)
+            f1 = f1(score0, score1)
+          
+        else:
             score1 = score1 + take_turn(strategy1(score1, score0), score0, dice)
             if is_swap(score0, score1):
                 score0, score1 = swap(score0, score1)
+            f1 = f1(score0, score1)
+        player = other(player)
     
     # END PROBLEM 5
     return score0, score1
@@ -196,6 +201,15 @@ def both(f, g):
     """
     # BEGIN PROBLEM 6
     "*** YOUR CODE HERE ***"
+    
+    def h(score0, score1):
+        
+        f1 = f(score0, score1)
+        g1 = g(score0, score1)
+        return both(f1, g1)
+    return h
+
+
     # END PROBLEM 6
 
 
@@ -217,7 +231,35 @@ def announce_highest(who, previous_high=0, previous_score=0):
     assert who == 0 or who == 1, 'The who argument should indicate a player.'
     # BEGIN PROBLEM 7
     "*** YOUR CODE HERE ***"
+
+    def compare(score0, score1):
+    	previous_score1 = previous_score
+    	previous_high1 = previous_high
+    	if who == 0:
+    		scorethisturn = score0 - previous_score
+    		if scorethisturn > previous_high:
+    			if scorethisturn != 1:
+    				print(scorethisturn ,"points! That's the biggest gain yet for Player", who)
+    			elif scorethisturn == 1:
+    				print("1 point! That's the biggest gain yet for Player", who)
+    			previous_high1 = scorethisturn
+    		previous_score1 = score0
+    	
+    	elif who == 1:
+    		scorethisturn = score1 - previous_score
+    		if scorethisturn > previous_high:
+    			if scorethisturn != 1:
+    				print(scorethisturn ,"points! That's the biggest gain yet for Player", who)
+    			elif scorethisturn == 1:
+    				print("1 point! That's the biggest gain yet for Player", who)
+    			previous_high1 = scorethisturn
+    		previous_score1 = score1
+
+    	return announce_highest(who, previous_high1, previous_score1)
+    return compare
+
     # END PROBLEM 7
+
 
 
 #######################
@@ -256,6 +298,15 @@ def make_averaged(fn, num_samples=1000):
     """
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
+    def average(*args):
+        sumation = 0
+        times = 0
+        while times < num_samples:
+            sumation = sumation + fn(*args)
+            times += 1
+        return sumation / num_samples
+    return average
+
     # END PROBLEM 8
 
 
@@ -270,6 +321,17 @@ def max_scoring_num_rolls(dice=six_sided, num_samples=1000):
     """
     # BEGIN PROBLEM 9
     "*** YOUR CODE HERE ***"
+    n = 1
+    n_max = 1
+    averaged_roll_dice = make_averaged(roll_dice)
+    averaged_max = averaged_roll_dice(1, dice)
+    while n <= 10:
+        if averaged_roll_dice(n, dice) > averaged_max:
+            averaged_max = averaged_roll_dice(n, dice)
+            n_max = n
+        n += 1
+    return n_max
+
     # END PROBLEM 9
 
 
@@ -318,7 +380,7 @@ def bacon_strategy(score, opponent_score, margin=8, num_rolls=4):
     rolls NUM_ROLLS otherwise.
     """
     # BEGIN PROBLEM 10
-    return 4  # Replace this statement
+    return (free_bacon(opponent_score) < margin and num_rolls) or 0 # Replace this statement
     # END PROBLEM 10
 
 
@@ -328,7 +390,13 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=4):
     NUM_ROLLS.
     """
     # BEGIN PROBLEM 11
-    return 4  # Replace this statement
+    if opponent_score > (score + free_bacon(opponent_score)) and opponent_score % (score + free_bacon(opponent_score)) == 0:
+        return 0
+    elif not bacon_strategy(score, opponent_score, margin, num_rolls):
+        return 0
+    else:
+        return num_rolls
+    
     # END PROBLEM 11
 
 
@@ -338,7 +406,7 @@ def final_strategy(score, opponent_score):
     *** YOUR DESCRIPTION HERE ***
     """
     # BEGIN PROBLEM 12
-    return 4  # Replace this statement
+    return  swap_strategy(score, opponent_score, margin = 9, num_rolls = 7) # Replace this statement
     # END PROBLEM 12
 
 
