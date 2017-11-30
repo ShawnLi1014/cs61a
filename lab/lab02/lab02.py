@@ -12,7 +12,7 @@ def lambda_curry2(func):
     8
     """
     "*** YOUR CODE HERE ***"
-    return ______
+    return lambda x : lambda y : func(x, y)
 
 # Higher Order Functions
 
@@ -48,3 +48,5 @@ def composite_identity(f, g):
     False
     """
     "*** YOUR CODE HERE ***"
+    fg, gf = compose1(f, g), compose1(g, f)
+    return lambda x : fg(x) == gf(x)
