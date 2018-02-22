@@ -135,6 +135,14 @@ def move_stack(n, start, end):
     """
     assert 1 <= start <= 3 and 1 <= end <= 3 and start != end, "Bad start/end"
     "*** YOUR CODE HERE ***"
+    if n == 1:
+        print_move(start, end)
+    else:
+        trans = 6 - start - end
+        move_stack(n - 1, start, trans)
+        print(start, end)
+        move_stack(n - 1, trans, end)
+
 
 
 def interval(a, b):
@@ -184,7 +192,7 @@ def div_interval(x, y):
     any value in y. Division is implemented as the multiplication of x by the
     reciprocal of y."""
     "*** YOUR CODE HERE ***"
-    assert upper_bound(y) - lower_bound(y) != 0
+    assert upper_bound(y) * lower_bound(y) >= 0
     reciprocal_y = interval(1/upper_bound(y), 1/lower_bound(y))
     return mul_interval(x, reciprocal_y)
 
@@ -206,12 +214,14 @@ def check_par():
     >>> lower_bound(x) != lower_bound(y) or upper_bound(x) != upper_bound(y)
     True
     """
-    r1 = interval(1, 1) # Replace this line!
-    r2 = interval(1, 1) # Replace this line!
+    r1 = interval(5, 8) # Replace this line!
+    r2 = interval(3, 5) # Replace this line!
     return r1, r2
 
 def multiple_references_explanation():
-    return """The multiple reference problem..."""
+    return """The multiple reference problem exists. The true value of the interval is fixed(though unknown), 
+    intervals in par1 repeated twice, which means the true value may assumed different, 
+    while intervals in par2 only appered once. So par2 is a better solution """
 
 def quadratic(x, a, b, c):
     """Return the interval that is the range of the quadratic defined by
@@ -223,6 +233,15 @@ def quadratic(x, a, b, c):
     '0 to 10'
     """
     "*** YOUR CODE HERE ***"
+    f = lambda x : a * x ** 2 + b * x +c
+    bound1 = f(lower_bound(x))
+    bound2 = f(upper_bound(x))
+    extreme_point = -b / (2 * a)
+    if extreme_point >= lower_bound(x) and extreme_point <= upper_bound(x):
+        extreme = f(extreme_point)
+        return interval(min(bound1, bound2, extreme), max(bound1, bound2, extreme))
+    else:
+        return interval(min(bound1, bound2), max(bound1, bound2))
 
 def polynomial(x, c):
     """Return the interval that is the range of the polynomial defined by
@@ -236,4 +255,18 @@ def polynomial(x, c):
     '18.0 to 23.0'
     """
     "*** YOUR CODE HERE ***"
+    def f(t, c):
+        i = -1
+        while len(c) > 0:
+            i += 1
+            return c[0] * pow(t, i) + f(t, c.pop(0))
+
+
+
+
+
+
+
+
+
 
