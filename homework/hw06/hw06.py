@@ -227,6 +227,7 @@ def with_totals(m):
     "*** YOUR CODE HERE ***"
     if is_weight(m):
         return m
+    return tree(total_weight(m), [[s[0], with_totals(end(s))] for s in sides(m)])
     
 
 ############
